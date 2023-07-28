@@ -1,0 +1,10 @@
+{
+  "name": "simultaneousSimons-Editor",
+  "references": [
+    "simultaneousSimons"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": []
+}
