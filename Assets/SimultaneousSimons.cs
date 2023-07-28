@@ -33,11 +33,11 @@ public class SimultaneousSimons : MonoBehaviour {
  		 new int[][]{
 			 new int[]{0,4,8,12}, new int[]{1,5,9,13}, new int[]{2,6,10,14}, new int[]{3,7,11,15}},
 		 new int[][]{
-			 new int[]{0,1,4,5}, new int[]{2,3,6,7}, new int[]{8,9,12,13}, new int[]{10,11,14,15}},
+			 new int[]{0,1,4,5}, new int[]{8,9,12,13}, new int[]{2,3,6,7}, new int[]{10,11,14,15}},
 		 new int[][]{
-			 new int[]{0,1,2,5}, new int[]{3,6,7,11}, new int[]{4,8,9,12}, new int[]{10,13,14,15}},
+			 new int[]{0,1,2,5}, new int[]{4,8,9,12}, new int[]{3,6,7,11}, new int[]{10,13,14,15}},
 		 new int[][]{
-			 new int[]{0,4,5,8}, new int[]{1,2,3,6}, new int[]{7,10,11,15}, new int[]{9,12,13,14}}
+			 new int[]{0,4,5,8}, new int[]{1,2,3,6}, new int[]{9,12,13,14}, new int[]{7,10,11,15}}
 		 };
 	 private static readonly int[][][] colorChanges = new int[][][]{
 		 new int[][]{
@@ -203,7 +203,11 @@ public class SimultaneousSimons : MonoBehaviour {
 
 					flashnum[num]++;
 				} else {
-					yield return new WaitForSeconds(4.6f);
+          if (buttonPressed) {
+            yield return new WaitForSeconds(4.6f);
+          } else {
+					  yield return new WaitForSeconds(2.3f);
+          }
 					flashnum[num] = 0;
 				}
 			}

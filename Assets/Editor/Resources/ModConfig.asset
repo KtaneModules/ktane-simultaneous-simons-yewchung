@@ -14,9 +14,12 @@ MonoBehaviour:
   id: simultaneousSimons
   title: Simultaneous Simons
   author: Yewchung
-  description: Just solve four vanilla Simons at the same time, easy enough, right?
+  description: 'Just solve four vanilla Simons at the same time, easy enough, right?
     Only issue is, they seem to have gotten scrambled together a bit. Ah well, nothing
-    our expert bomb solver can't handle, I'm sure.
+    our expert bomb solver can''t handle, I''m sure.
+
+
+    Manual can be found at ktane.timwi.de or in the manuals folder of your game.'
   version: 0.1
   outputFolder: build
-  previewImage: {fileID: 0}
+  previewImage: {fileID: 2800000, guid: 19bd5ad2fe2c27c4c9c6515f9d6c872f, type: 3}

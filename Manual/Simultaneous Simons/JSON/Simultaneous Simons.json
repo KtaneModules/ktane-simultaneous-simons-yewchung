@@ -1,0 +1,16 @@
+{
+  "Author": "Yewchung",
+  "Compatibility": "Compatible",
+  "DefuserDifficulty": "Easy",
+  "Description": "Solve four Simons simultaneously. Watch out for the blinking lights. Tags: simon, 4-colors, 16-buttons",
+  "ExpertDifficulty": "VeryEasy",
+  "ModuleID": "simultaneousSimons",
+  "Name": "Simultaneous Simons",
+  "Origin": "Mods",
+  "Published": "2023-07-27",
+  "SortKey": "SIMULTANEOUSSIMONS",
+  "SourceUrl": "https://github.com/yewchung/ktane-simultaneous-simons",
+  "SteamID": "3011026952",
+  "Symbol": "Sisi",
+  "Type": "Regular"
+}
