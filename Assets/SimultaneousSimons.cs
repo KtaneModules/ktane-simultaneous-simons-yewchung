@@ -153,6 +153,7 @@ public class SimultaneousSimons : MonoBehaviour {
 	 void ButtonPress(int btn) {
 		 buttonPressed = true;
 		 DebugMessage("Pressed the " + colornames[buttonColors[btn]] + " button for Simon " + findGroup(btn) + ".");
+     setValidButtons();
 		 if (!validButtons.Contains(btn)) {
 			 GetComponent<KMBombModule>().HandleStrike();
 			 for(int i = 0; i < 4; i++) {
