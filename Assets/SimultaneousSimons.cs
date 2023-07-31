@@ -92,14 +92,6 @@ public class SimultaneousSimons : MonoBehaviour {
 			 };
 		 }
 
-		 var serialNum = Bomb.GetSerialNumber().ToUpperInvariant();
-		 string vowels = "AEIOU";
-		 if (serialNum.ToArray().Intersect(vowels.ToArray()).Count() > 0) {
-			 serial = 0;
-		 } else {
-			 serial = 1;
-		 }
-
 		 groups = Rnd.Range(0, 5);
 
 		 int[] temp = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
@@ -152,7 +144,7 @@ public class SimultaneousSimons : MonoBehaviour {
 
 	 void ButtonPress(int btn) {
 		 buttonPressed = true;
-		 DebugMessage("Pressed the " + colornames[buttonColors[btn]] + " button for Simon " + findGroup(btn) + ".");
+		 DebugMessage("Pressed the " + colornames[buttonColors[btn]] + " button for Simon " + (findGroup(btn) + 1) + ".");
      setValidButtons();
 		 if (!validButtons.Contains(btn)) {
 			 GetComponent<KMBombModule>().HandleStrike();
@@ -295,6 +287,13 @@ public class SimultaneousSimons : MonoBehaviour {
 	 }
 
 	 void setValidButtons() {
+     var serialNum = Bomb.GetSerialNumber().ToUpperInvariant();
+     string vowels = "AEIOU";
+     if (serialNum.ToArray().Intersect(vowels.ToArray()).Count() > 0) {
+       serial = 0;
+     } else {
+       serial = 1;
+     }
 		 for(int i = 0; i < 4; i++) {
 			 validButtons[i] = -1;
 		 }
