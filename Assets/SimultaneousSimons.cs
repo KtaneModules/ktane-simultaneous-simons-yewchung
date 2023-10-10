@@ -331,14 +331,60 @@ public class SimultaneousSimons : MonoBehaviour {
 	 }
 
 #pragma warning disable 414
-   private readonly string TwitchHelpMessage = @"Use !{0} to do something.";
+   private readonly string TwitchHelpMessage = "\"!{0} press (R/Y/G/B)(1/2/3/4)\" or \"!{0} press (1/2/3/4)(R/Y/G/B)\" [Press buttons corresponding to the colors displayed and the left-most diagram in the manual. Multiple button presses can be chained on the module by appending multiples of the desired buttons.]";
 #pragma warning restore 414
 
    IEnumerator ProcessTwitchCommand (string Command) {
-      yield return null;
+		var intCmd = Command.Trim();
+		var matchPressCmd = Regex.Match(intCmd, @"^press(\s([byrg][1234]|[1234][byrg]))+$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+		if (matchPressCmd.Success)
+        {
+			var matchesAllPresses = Regex.Matches(matchPressCmd.Value.ToLowerInvariant().Replace("press",""), @"[byrg][1234]|[1234][byrg]", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+			var allPresses = new List<KMSelectable>();
+			foreach (Match curMatch in matchesAllPresses)
+            {
+				//Debug.LogFormat("\"{0}\"", curMatch.Value);
+				var curStr = curMatch.Value;
+				var _1stChrStr = curStr[0];
+				var _2ndChrStr = curStr[1];
+				if (char.IsDigit(_1stChrStr))
+				{// Formatted as [1234][RYGB]
+					var curRow = "1234".IndexOf(_1stChrStr);
+					var idxColor = "byrg".IndexOf(_2ndChrStr);
+					allPresses.Add(btnSelectables[4 * curRow + buttonColors.Skip(4 * curRow).IndexOf(a => a == idxColor)]);
+				}
+				else // Formatted as [RYGB][1234]
+				{
+					var curRow = "1234".IndexOf(_2ndChrStr);
+					var idxColor = "byrg".IndexOf(_1stChrStr);
+					allPresses.Add(btnSelectables[4 * curRow + buttonColors.Skip(4 * curRow).IndexOf(a => a == idxColor)]);
+				}
+            }
+			if (allPresses.Any())
+				yield return null;
+			foreach (var aPress in allPresses)
+            {
+				aPress.OnInteract();
+				yield return new WaitForSeconds(0.1f);
+            }
+        }
+		yield break;
    }
 
    IEnumerator TwitchHandleForcedSolve () {
-      yield return null;
+		var selectedGrouping = groupings[groups];
+		while (validButtons.Count(a => a != -1) > 1)
+        {
+			for (var x = 0; x < validButtons.Length; x++)
+			{
+				if (validButtons[x] != -1)
+				{
+					btnSelectables[validButtons[x]].OnInteract();
+					yield return new WaitForSeconds(0.1f);
+				}
+			}
+        }
+
+		yield break;
    }
 }
