@@ -331,13 +331,19 @@ public class SimultaneousSimons : MonoBehaviour {
 	 }
 
 #pragma warning disable 414
-   private readonly string TwitchHelpMessage = "\"!{0} press (R/Y/G/B)(1/2/3/4)\" or \"!{0} press (1/2/3/4)(R/Y/G/B)\" [Press buttons corresponding to the colors displayed and the left-most diagram in the manual. Multiple button presses can be chained on the module by appending multiples of the desired buttons.]";
+   private readonly string TwitchHelpMessage = "\"!{0} press (A/B/C/D)(1/2/3/4)\" or \"!{0} press (1/2/3/4)(A/B/C/D)\" [Press buttons corresponding to the coordinate of the module, 1-4 going from top-right to bottom-left rows, A-D going from top-left to bottom-right columns. Multiple button presses can be chained on the module by appending multiples of the desired buttons.] | \"!{0} mute\" [Mutes the loud sounds coming from the module.]";
 #pragma warning restore 414
 
    IEnumerator ProcessTwitchCommand (string Command) {
 		var intCmd = Command.Trim();
-		var matchPressCmd = Regex.Match(intCmd, @"^press(\s([byrg][1234]|[1234][byrg]))+$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
-		if (matchPressCmd.Success)
+		var matchPressCmd = Regex.Match(intCmd, @"^press(\s([abcd][1234]|[1234][abcd]))+$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+		var matchMute = Regex.Match(intCmd, @"^mute$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+		if (matchMute.Success)
+		{
+			yield return null;
+			buttonPressed = false;
+		}
+		else if (matchPressCmd.Success)
         {
 			var matchesAllPresses = Regex.Matches(matchPressCmd.Value.ToLowerInvariant().Replace("press",""), @"[byrg][1234]|[1234][byrg]", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 			var allPresses = new List<KMSelectable>();
@@ -348,16 +354,16 @@ public class SimultaneousSimons : MonoBehaviour {
 				var _1stChrStr = curStr[0];
 				var _2ndChrStr = curStr[1];
 				if (char.IsDigit(_1stChrStr))
-				{// Formatted as [1234][RYGB]
+				{// Formatted as [1234][ABCD]
 					var curRow = "1234".IndexOf(_1stChrStr);
-					var idxColor = "byrg".IndexOf(_2ndChrStr);
-					allPresses.Add(btnSelectables[4 * curRow + buttonColors.Skip(4 * curRow).IndexOf(a => a == idxColor)]);
+					var curCol = "abcd".IndexOf(_2ndChrStr);
+					allPresses.Add(btnSelectables[4 * curRow + curCol]);
 				}
-				else // Formatted as [RYGB][1234]
+				else // Formatted as [ABCD][1234]
 				{
 					var curRow = "1234".IndexOf(_2ndChrStr);
-					var idxColor = "byrg".IndexOf(_1stChrStr);
-					allPresses.Add(btnSelectables[4 * curRow + buttonColors.Skip(4 * curRow).IndexOf(a => a == idxColor)]);
+					var curCol = "abcd".IndexOf(_1stChrStr);
+					allPresses.Add(btnSelectables[4 * curRow + curCol]);
 				}
             }
 			if (allPresses.Any())
@@ -373,14 +379,23 @@ public class SimultaneousSimons : MonoBehaviour {
 
    IEnumerator TwitchHandleForcedSolve () {
 		var selectedGrouping = groupings[groups];
+		var lastStrikeCount = Bomb.GetStrikes();
+		setValidButtons(); // Since the buttons are not adjusted for 3n+1 or 3n+2 strikes, recalculate it before autosolving.
 		while (validButtons.Count(a => a != -1) > 1)
         {
+			if (lastStrikeCount != Bomb.GetStrikes()) // Check if the strike count changes mid auto-solve. If it does, recalculate before continuing.
+			{
+				lastStrikeCount = Bomb.GetStrikes();
+				setValidButtons();
+			}
 			for (var x = 0; x < validButtons.Length; x++)
 			{
 				if (validButtons[x] != -1)
 				{
 					btnSelectables[validButtons[x]].OnInteract();
 					yield return new WaitForSeconds(0.1f);
+					if (lastStrikeCount != Bomb.GetStrikes()) // Check if the strike count changes mid auto-solve. If it does, stop processing this section and recalculate.
+						break;
 				}
 			}
         }
