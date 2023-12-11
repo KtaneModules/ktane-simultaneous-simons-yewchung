@@ -52,6 +52,7 @@ public class SimultaneousSimons : MonoBehaviour {
 	 private int[] validButtons = {-1,-1,-1,-1};
 	 private bool buttonPressed = false;
 	 private int serial = 0;
+   private int savedStrikes = 0;
 
    void Awake () {
       ModuleId = ModuleIdCounter++;
@@ -134,7 +135,8 @@ public class SimultaneousSimons : MonoBehaviour {
 
 		 setValidButtons();
 
-		 PrintCorrectButtons();
+     PrintCorrectButtons();
+     savedStrikes = Bomb.GetStrikes();
 
 		 StartCoroutine(FlashingLights(0));
 		 StartCoroutine(FlashingLights(1));
@@ -143,6 +145,11 @@ public class SimultaneousSimons : MonoBehaviour {
    }
 
 	 void ButtonPress(int btn) {
+     if (savedStrikes != Bomb.GetStrikes()) {
+       DebugMessage("Number of Strikes changed since solution was last printed. New solution for " + Bomb.GetStrikes() + " strikes:");
+       PrintCorrectButtons();
+       savedStrikes = Bomb.GetStrikes();
+     }
 		 buttonPressed = true;
 		 DebugMessage("Pressed the " + colornames[buttonColors[btn]] + " button for Simon " + (findGroup(btn) + 1) + ".");
      setValidButtons();
@@ -151,9 +158,10 @@ public class SimultaneousSimons : MonoBehaviour {
 			 for(int i = 0; i < 4; i++) {
 				 substagenum[i] = 0;
 			 }
-			 DebugMessage("Strike! Correct sequence shifted for +1 strike.");
+			 DebugMessage("Strike! New solution for " + Bomb.GetStrikes() + " strikes:");
 			 setValidButtons();
 			 PrintCorrectButtons();
+       savedStrikes = Bomb.GetStrikes();
 
 			 StartCoroutine(FlashingLights(0));
 			 StartCoroutine(FlashingLights(1));
@@ -258,6 +266,7 @@ public class SimultaneousSimons : MonoBehaviour {
 
 	 void nextStage() {
 		 if (stagenum >= 3) {
+       DebugMessage("Module Solved!");
 			 GetComponent<KMBombModule>().HandlePass();
 			 ModuleSolved = true;
 		 } else {
@@ -279,6 +288,7 @@ public class SimultaneousSimons : MonoBehaviour {
 
 			 setValidButtons();
 			 PrintCorrectButtons();
+       savedStrikes = Bomb.GetStrikes();
 			 StartCoroutine(FlashingLights(0));
 			 StartCoroutine(FlashingLights(1));
 			 StartCoroutine(FlashingLights(2));
