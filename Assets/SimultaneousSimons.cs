@@ -50,7 +50,7 @@ public class SimultaneousSimons : MonoBehaviour {
 	 private int stagenum = 0;
 	 private int[] substagenum = {0,0,0,0};
 	 private int[] validButtons = {-1,-1,-1,-1};
-	 private bool buttonPressed = false;
+	 private bool buttonPressed = false, playSounds = false;
 	 private int serial = 0;
    private int savedStrikes = 0;
 
@@ -151,6 +151,7 @@ public class SimultaneousSimons : MonoBehaviour {
        savedStrikes = Bomb.GetStrikes();
      }
 		 buttonPressed = true;
+		playSounds = true;
 		 DebugMessage("Pressed the " + colornames[buttonColors[btn]] + " button for Simon " + (findGroup(btn) + 1) + ".");
      setValidButtons();
 		 if (!validButtons.Contains(btn)) {
@@ -190,7 +191,7 @@ public class SimultaneousSimons : MonoBehaviour {
 					int i = sequences[num,flashnum[num]];
 		 			btnRenderers[i].material.color = flashyColors[buttonColors[i]];
 					Lights[i].enabled = true;
-					if (buttonPressed) {
+					if (buttonPressed && playSounds) {
 						Audio.PlaySoundAtTransform(sounds[buttonColors[i]], btnRenderers[i].transform);
 					}
 					//Lights[i].intensity = 5;
@@ -351,15 +352,15 @@ public class SimultaneousSimons : MonoBehaviour {
 		if (matchMute.Success)
 		{
 			yield return null;
-			buttonPressed = false;
+			playSounds = false;
 		}
 		else if (matchPressCmd.Success)
         {
-			var matchesAllPresses = Regex.Matches(matchPressCmd.Value.ToLowerInvariant().Replace("press",""), @"[byrg][1234]|[1234][byrg]", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+			var matchesAllPresses = Regex.Matches(matchPressCmd.Value.ToLowerInvariant().Replace("press",""), @"[abcd][1234]|[1234][abcd]", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 			var allPresses = new List<KMSelectable>();
 			foreach (Match curMatch in matchesAllPresses)
             {
-				//Debug.LogFormat("\"{0}\"", curMatch.Value);
+				Debug.LogFormat("\"{0}\"", curMatch.Value);
 				var curStr = curMatch.Value;
 				var _1stChrStr = curStr[0];
 				var _2ndChrStr = curStr[1];
